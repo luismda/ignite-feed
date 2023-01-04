@@ -5,6 +5,7 @@ import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react'
 
 import { Avatar } from './Avatar'
 import { Comment } from './Comment'
+import { useModal } from '../hooks/useModal'
 
 import style from './Post.module.css'
 
@@ -40,8 +41,9 @@ interface PostProps {
 
 export function Post({ author, publishedAt, content, comments: existingComments }: PostProps) {
     const [comments, setComments] = useState(existingComments)
-
     const [newCommentText, setNewCommentText] = useState('')
+
+    const modal = useModal()
 
     const publishedDateFormated = format(publishedAt, "d 'de' LLLL 'às' HH:mm'h'", {
         locale: ptBR
@@ -82,6 +84,12 @@ export function Post({ author, publishedAt, content, comments: existingComments 
         event.target.setCustomValidity('Esse campo é obrigatório.')
     }
 
+    function showModalToConfirmDeleteComment(commentId: number) {
+        modal.open({
+            onConfirm: () => deleteComment(commentId)
+        })
+    }
+
     function deleteComment(commentId: number) {
         const commentsWithoutDeletedOne = comments.filter(comment => {
             return comment.id !== commentId
@@ -93,76 +101,78 @@ export function Post({ author, publishedAt, content, comments: existingComments 
     const isNewCommentEmpty = newCommentText.trim().length === 0
 
     return (
-        <article className={style.post}>
-            <header>
-                <div className={style.author}>
-                    <Avatar src={author.avatarUrl} />
+        <>
+            <article className={style.post}>
+                <header>
+                    <div className={style.author}>
+                        <Avatar src={author.avatarUrl} />
 
-                    <div className={style.authorInfo}>
-                        <strong>{author.name}</strong>
-                        <span>{author.role}</span>
+                        <div className={style.authorInfo}>
+                            <strong>{author.name}</strong>
+                            <span>{author.role}</span>
+                        </div>
                     </div>
+
+                    <time 
+                        title={publishedDateFormated} 
+                        dateTime={publishedAt.toISOString()}
+                    >
+                        {publishedDateRelativeToNow}
+                    </time>
+                </header>
+
+                <div className={style.content}>
+                    {content.map(line => {
+                        if (line.type === 'paragraph') {
+                            return <p key={line.id}>{line.content}</p>
+                        } else if (line.type === 'link') {
+                            return <p key={line.id}><a href="#">{line.content}</a></p>
+                        } else if (line.type === 'hashtags') {
+                            return (
+                                <p key={line.id}>
+                                    {line.content.split('#').map(hashtag => {
+                                        return hashtag !== '' ? <a key={hashtag} href="#">#{hashtag}{' '}</a> : ''
+                                    })}
+                                </p>
+                            )
+                        }
+                    })}
                 </div>
 
-                <time 
-                    title={publishedDateFormated} 
-                    dateTime={publishedAt.toISOString()}
-                >
-                    {publishedDateRelativeToNow}
-                </time>
-            </header>
+                <form onSubmit={handleCreateNewComment} className={style.commentForm}>
+                    <strong>Deixe seu feedback</strong>
 
-            <div className={style.content}>
-                {content.map(line => {
-                    if (line.type === 'paragraph') {
-                        return <p key={line.id}>{line.content}</p>
-                    } else if (line.type === 'link') {
-                        return <p key={line.id}><a href="#">{line.content}</a></p>
-                    } else if (line.type === 'hashtags') {
+                    <textarea 
+                        placeholder="Escreva um comentário..."
+                        value={newCommentText}
+                        onChange={handleNewCommentChange}
+                        onInvalid={handleNewCommentInvalid}
+                        required
+                    />
+
+                    <footer>
+                        <button type="submit" disabled={isNewCommentEmpty}>
+                            Publicar
+                        </button>
+                    </footer>
+                </form>
+
+                <div className={style.commentList}>
+                    {comments.map(({ id, author, comment, numberLikes, commentedAt }) => {
                         return (
-                            <p key={line.id}>
-                                {line.content.split('#').map(hashtag => {
-                                    return hashtag !== '' ? <a key={hashtag} href="#">#{hashtag}{' '}</a> : ''
-                                })}
-                            </p>
+                            <Comment 
+                                key={id} 
+                                id={id}
+                                author={author}
+                                content={comment} 
+                                numberLikes={numberLikes}
+                                commentedAt={commentedAt}
+                                onDeleteComment={showModalToConfirmDeleteComment}
+                            />
                         )
-                    }
-                })}
-            </div>
-
-            <form onSubmit={handleCreateNewComment} className={style.commentForm}>
-                <strong>Deixe seu feedback</strong>
-
-                <textarea 
-                    placeholder="Escreva um comentário..."
-                    value={newCommentText}
-                    onChange={handleNewCommentChange}
-                    onInvalid={handleNewCommentInvalid}
-                    required
-                />
-
-                <footer>
-                    <button type="submit" disabled={isNewCommentEmpty}>
-                        Publicar
-                    </button>
-                </footer>
-            </form>
-
-            <div className={style.commentList}>
-                {comments.map(({ id, author, comment, numberLikes, commentedAt }) => {
-                    return (
-                        <Comment 
-                            key={id} 
-                            id={id}
-                            author={author}
-                            content={comment} 
-                            numberLikes={numberLikes}
-                            commentedAt={commentedAt}
-                            onDeleteComment={deleteComment}
-                        />
-                    )
-                })}
-            </div>
-        </article>
+                    })}
+                </div>
+            </article>
+        </>
     )
 }

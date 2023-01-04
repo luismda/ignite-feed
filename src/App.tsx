@@ -1,3 +1,5 @@
+import { ModalContextProvider } from './contexts/ModalContext'
+
 import { Header } from './components/Header'
 import { Sidebar } from './components/Sidebar'
 import { Post, Author, Content, Comment } from './components/Post'
@@ -78,26 +80,28 @@ const posts: PostData[] = [
 
 export function App() {
   return (
-    <div>
-      <Header />
+    <ModalContextProvider>
+      <div>
+        <Header />
 
-      <div className={style.wrapper}>
-        <Sidebar />
+        <div className={style.wrapper}>
+          <Sidebar />
 
-        <main>
-          {posts.map(post => {
-            return (
-              <Post 
-                key={post.id}
-                author={post.author}
-                content={post.content}
-                comments={post.comments}
-                publishedAt={post.publishedAt}
-              />
-            )
-          })}
-        </main>
+          <main>
+            {posts.map(post => {
+              return (
+                <Post 
+                  key={post.id}
+                  author={post.author}
+                  content={post.content}
+                  comments={post.comments}
+                  publishedAt={post.publishedAt}
+                />
+              )
+            })}
+          </main>
+        </div>
       </div>
-    </div>
+    </ModalContextProvider>
   )
 }
