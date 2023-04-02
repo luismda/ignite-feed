@@ -1,24 +1,24 @@
 # Ignite Feed 📱
 
-Projeto desenvolvido durante as aulas de React dentro do Ignite da [Rocketseat](https://github.com/rocketseat-education)
+This project was developed during the classes of first module in Ignite of [**Rocketseat**](https://github.com/rocketseat-education).
 
 #### 📌 Links
 
-- [Figma da aplicação](https://www.figma.com/file/Mmp2GWbxIiLWWNDXVxDWqP/Ignite-Feed-(Community)?node-id=0%3A1)
-- [Visualizar projeto](https://luismda.github.io/ignite-feed/)
+- [Figma](https://www.figma.com/file/Mmp2GWbxIiLWWNDXVxDWqP/Ignite-Feed-(Community)?node-id=0%3A1)
+- [Test the application](https://luismda.github.io/ignite-feed/)
 
-#### ⚙ Principais funcionalidades
+#### ⚙ Functionalties
 
-- Adicionar comentários em um post
-- Curtir um comentário
-- Deletar um comentário
+- Add new comments in post
+- Like a comment
+- Delete a comment
 
-#### 🛠 Ferramentas utilizadas
+#### 🛠 Tools
 
-- ReactJS
+- React.js
 - CSS Modules
 - TypeScript
 
 ##
 
-#NeverStopLearning 🚀
+**#NeverStopLearning 🚀**
